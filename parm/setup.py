@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+import shutil
 from pathlib import Path
 from typing import Any
 from copy import deepcopy
@@ -432,10 +433,8 @@ class ConfigGenerator:
             cycles = common.get("cycles", {})
             leadtimes = common.get("leadtimes", {})
             variables = common.get("variables", {})
-    
-            # =========================================================
+
             # prewxvx
-            # =========================================================
             if task_name == "prewxvx":
     
                 # Forecast frequency: '6:00:00' -> '6h'.
@@ -472,9 +471,7 @@ class ConfigGenerator:
                     variables.keys()
                 )
     
-            # =========================================================
             # plot_vx_grid and plot_vx_obs
-            # =========================================================
             elif task_name in {"plot_vx_grid", "plot_vx_obs"}:
     
                 # Dates retain the T separator.
@@ -800,6 +797,226 @@ class ConfigGenerator:
         return generated_files
 
     # -----------------------------------------------------------------
+    # Generate ecFlow files
+    # -----------------------------------------------------------------
+
+    def generate_ecflow_files(self) -> list[Path]:
+        """Generate the ecFlow definition and supporting scripts."""
+    
+        app_config = self.config.get("app", {})
+    
+        # Generate ecFlow files only when ecFlow is selected.
+        if app_config.get("workflow_manager") != "ecflow":
+            logger.info("Skipping ecFlow file generation.")
+            return []
+    
+        exp_case_name = app_config.get("exp_case_name")
+        if not exp_case_name:
+            raise ValueError(
+                "The 'app.exp_case_name' parameter must be set "
+                "to generate ecFlow files."
+            )
+    
+        # Resolve template and output directories.
+        ecf_template_dir = self.repo_dir / "ecf"
+        defs_template_dir = ecf_template_dir / "defs"
+    
+        exp_case_path = self.exp_cases_dir / exp_case_name
+        exp_ecf_path = exp_case_path / "ecf"
+    
+        exp_ecf_path.mkdir(parents=True, exist_ok=True)
+    
+        # Locate the definition template.
+        if not defs_template_dir.is_dir():
+            raise FileNotFoundError(
+                f"ecFlow definition template directory not found: "
+                f"{defs_template_dir}"
+            )
+    
+        definition_templates = sorted(
+            path
+            for path in defs_template_dir.iterdir()
+            if path.is_file()
+        )
+    
+        if len(definition_templates) != 1:
+            raise ValueError(
+                f"Expected exactly one definition template in "
+                f"{defs_template_dir}, but found "
+                f"{len(definition_templates)}."
+            )
+    
+        definition_template_name = definition_templates[0].name
+    
+        # Use a separate Jinja2 environment for the definition template.
+        defs_env = Environment(
+            loader=FileSystemLoader(str(defs_template_dir)),
+            undefined=StrictUndefined,
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+
+        # Read cycle configuration.
+        cycles = self.config.get("common", {}).get("cycles", {})
+    
+        start_value = cycles.get("start")
+        stop_value = cycles.get("stop")
+        step_days = cycles.get("step", 0)
+    
+        if start_value is None or stop_value is None:
+            raise ValueError(
+                "The 'common.cycles.start' and 'common.cycles.stop' "
+                "parameters must be set to generate the ecFlow definition."
+            )
+    
+        def parse_cycle_datetime(value: str | datetime) -> datetime:
+            """Convert a cycle value to datetime."""
+            if isinstance(value, datetime):
+                return value
+    
+            if not isinstance(value, str):
+                raise TypeError(
+                    "Cycle start/stop values must be strings or datetime "
+                    f"objects; got {type(value).__name__}."
+                )
+    
+            return datetime.fromisoformat(value)
+    
+        start_datetime = parse_cycle_datetime(start_value)
+        stop_datetime = parse_cycle_datetime(stop_value)
+    
+        if stop_datetime < start_datetime:
+            raise ValueError(
+                "'common.cycles.stop' must be greater than or equal to "
+                "'common.cycles.start'."
+            )
+    
+        if isinstance(step_days, bool) or not isinstance(step_days, int):
+            raise TypeError(
+                "'common.cycles.step' must be an integer number of days."
+            )
+    
+        if step_days < 0:
+            raise ValueError(
+                "'common.cycles.step' cannot be negative."
+            )
+    
+        # Format cycle values for the ecFlow definition template.
+        yyyymmdd_first = start_datetime.strftime("%Y%m%d")
+        yyyymmdd_last = stop_datetime.strftime("%Y%m%d")
+        hh_first = start_datetime.strftime("%H")
+    
+        # Read platform scheduler configuration.
+        sched = self.platform_params.get("sched")
+    
+        if not sched:
+            raise ValueError(
+                "The platform configuration must define 'sched' "
+                "to generate the ecFlow definition."
+            )
+
+        # Generate task flags dynamically from config_base.yaml.
+        configured_tasks = self.config.get("tasks", {})
+        task_list = self.validate_task_list()
+    
+        if not configured_tasks:
+            raise ValueError(
+                "The 'tasks' group in config_base.yaml is empty or missing."
+            )
+    
+        # Ensure all selected tasks are defined in the configuration.
+        unknown_tasks = set(task_list) - set(configured_tasks)
+    
+        if unknown_tasks:
+            raise ValueError(
+                f"Unknown task(s) in task_list: {sorted(unknown_tasks)}"
+            )
+    
+        # Generate a Boolean flag for every configured task.
+        # A flag is True only when its task is selected in task_list.
+        task_flags = {
+            f"task_flag_{task_name}": task_name in task_list
+            for task_name in configured_tasks
+        }
+    
+        # Build the Jinja2 rendering context.
+        context = {
+            "exp_case_name": exp_case_name,
+            "exp_case_path": str(exp_case_path),
+            "exp_ecf_path": str(exp_ecf_path),
+            "yyyymmdd_first": yyyymmdd_first,
+            "yyyymmdd_last": yyyymmdd_last,
+            "date_cycle_freq_day": step_days,
+            "hh_first": hh_first,
+            "sched": sched,
+            **task_flags,
+        }
+    
+        # Render the ecFlow definition file.
+        definition_template = defs_env.get_template(
+            definition_template_name
+        )
+    
+        definition_content = definition_template.render(**context)
+    
+        definition_path = exp_ecf_path / f"{exp_case_name}.def"
+        definition_path.write_text(
+            definition_content.rstrip() + "\n",
+            encoding="utf-8",
+        )
+    
+        generated_files = [definition_path]
+    
+        # Render supporting shell scripts.
+        scripts_env = Environment(
+            loader=FileSystemLoader(str(ecf_template_dir)),
+            undefined=StrictUndefined,
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+    
+        script_templates = {
+            "template.begin_suite.sh": exp_ecf_path / "begin_suite.sh",
+            "template.control_suite.sh": exp_ecf_path / "control_suite.sh",
+            "template.start_server.sh": exp_ecf_path / "start_server.sh",
+        }
+    
+        for template_name, output_path in script_templates.items():
+            template = scripts_env.get_template(template_name)
+            content = template.render(**context)
+    
+            output_path.write_text(
+                content.rstrip() + "\n",
+                encoding="utf-8",
+            )
+    
+            output_path.chmod(0o755)
+            generated_files.append(output_path)
+    
+        # Copy the static stop_server.sh script.
+        stop_server_template = ecf_template_dir / "stop_server.sh"
+        stop_server_path = exp_ecf_path / "stop_server.sh"
+    
+        if not stop_server_template.is_file():
+            raise FileNotFoundError(
+                f"ecFlow stop-server script not found: "
+                f"{stop_server_template}"
+            )
+    
+        shutil.copy2(stop_server_template, stop_server_path)
+        stop_server_path.chmod(0o755)
+    
+        generated_files.append(stop_server_path)
+    
+        logger.info(
+            "Generated %d ecFlow file(s) in %s.",
+            len(generated_files),
+            exp_case_path,
+        )
+    
+        return generated_files
+
+    # -----------------------------------------------------------------
     # Create symlinks to NCO directories
     # -----------------------------------------------------------------
 
@@ -938,7 +1155,10 @@ class ConfigGenerator:
         # Generate job cards (ecf scripts)
         job_cards = self.generate_job_cards()
 
-        return generated_files + job_cards
+        # Generate ecFlow definition and supporting scripts.
+        ecflow_files = self.generate_ecflow_files()
+
+        return generated_files + job_cards + ecflow_files
 
 # ---------------------------------------------------------------------
 # Command-line interface
