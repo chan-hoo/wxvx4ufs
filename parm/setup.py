@@ -736,10 +736,10 @@ class ConfigGenerator:
 
             if workflow_manager == "ecflow":
                 output_fn = (
-                    f"{task_name}_%ECF_DATE%%CYC%_%ECF_TRYNO%.log"
+                    f"{run}_{task_name}_%ECF_DATE%%CYC%_%ECF_TRYNO%.log"
                 )
             else:
-                output_fn = f"{task_name}.%j.log"
+                output_fn = f"{run}_{task_name}.%j.log"
             output_name = str(log_dir / output_fn)
 
             context = {
