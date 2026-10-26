@@ -1,4 +1,5 @@
 *.swp
+parm/config.yaml
 parm/exp_cases/
 parm/PTMP/
 sorc/conda/
