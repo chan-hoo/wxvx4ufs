@@ -969,7 +969,47 @@ class ConfigGenerator:
         )
     
         generated_files = [definition_path]
-    
+
+        # Generate a script to load the existing platform modulefile.
+        modulefiles_dir = self.repo_dir / "modulefiles"
+        platform = app_config.get("platform")
+        modulefile_name = f"modules_{platform}.intel"
+        modulefile_path = modulefiles_dir / f"{modulefile_name}.lua"
+
+        if not modulefile_path.is_file():
+            raise FileNotFoundError(
+                f"Platform modulefile not found: {modulefile_path}"
+            )
+
+        # Generate the shell script.
+        load_script_path = exp_ecf_path / "load_ecflow.sh"
+        load_script_content = f"""#!/usr/bin/env bash
+
+# Load environment modules for ecFlow tasks.
+set -e
+
+# Add the repository modulefiles directory to MODULEPATH.
+module use "{modulefiles_dir}"
+
+# Load the existing platform-specific Lua modulefile.
+module load "{modulefile_name}"
+
+module list
+"""
+
+        load_script_path.write_text(
+            load_script_content,
+            encoding="utf-8",
+        )
+        load_script_path.chmod(0o755)
+
+        generated_files.append(load_script_path)
+
+        logger.info(
+            "Generated ecFlow module-loading script: %s",
+            load_script_path,
+        )
+
         # Render supporting shell scripts.
         scripts_env = Environment(
             loader=FileSystemLoader(str(ecf_template_dir)),
