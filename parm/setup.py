@@ -1010,13 +1010,35 @@ class ConfigGenerator:
         stop_server_path.chmod(0o755)
     
         generated_files.append(stop_server_path)
-    
+
         logger.info(
             "Generated %d ecFlow file(s) in %s.",
             len(generated_files),
             exp_case_path,
         )
-    
+
+        # Copy all files from the ecFlow include directory.
+        include_dir = ecf_template_dir / "include"
+
+        if not include_dir.is_dir():
+            raise FileNotFoundError(
+                f"ecFlow include directory not found: {include_dir}"
+            )
+
+        for source_file in include_dir.iterdir():
+            if not source_file.is_file():
+                continue
+
+            destination_file = exp_ecf_path / source_file.name
+            shutil.copy2(source_file, destination_file)
+            generated_files.append(destination_file)
+
+            logger.info(
+                "Copied ecFlow include file: %s -> %s",
+                source_file,
+                destination_file,
+            )
+
         return generated_files
 
     # -----------------------------------------------------------------
