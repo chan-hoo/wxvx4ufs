@@ -3,7 +3,7 @@ app:
   exp_case_name: test_eagle
   platform: ursa
   run_type: ctest
-  workflow_manager: ecflow
+  workflow_manager: None
   workflow_type: eagle
 nco_vars:
   envir: test
@@ -16,6 +16,7 @@ config_common:
   - app
   - nco_vars
 task_list:
+  - prewxvx
   - vx_grid2grid
   - vx_grid2obs
 tasks:
@@ -36,8 +37,8 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:15:00"
-    external_data: true
+      walltime: "00:10:00"
+    external_data: false
   vx_grid2obs:
     groups:
       - common
@@ -47,7 +48,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:15:00"
-    external_data: true
+    external_data: false
   plot_vx_grid:
     groups:
       - common
@@ -159,7 +160,7 @@ vx_grid2obs:
   paths:
     obs: '{{ meta.workdir }}/obs'
 prewxvx:
-  forecast_path: '{{ DATA }}'
+  forecast_path: '{{ DATA }}/inference_output'
   lam_index: 64220
   lcc_info:
     n_x: 338
