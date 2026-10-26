@@ -973,6 +973,10 @@ class ConfigGenerator:
         # Generate a script to load the existing platform modulefile.
         modulefiles_dir = self.repo_dir / "modulefiles"
         platform = app_config.get("platform")
+        if platform == "gaea-c6":
+            purge_reset = "reset"
+        else:
+            purge_reset = "purge"
         modulefile_name = f"modules_{platform}.intel"
         modulefile_path = modulefiles_dir / f"{modulefile_name}.lua"
 
@@ -987,6 +991,8 @@ class ConfigGenerator:
 
 # Load environment modules for ecFlow tasks.
 set -e
+
+module {purge_reset}
 
 # Add the repository modulefiles directory to MODULEPATH.
 module use "{modulefiles_dir}"
