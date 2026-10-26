@@ -905,7 +905,10 @@ class ConfigGenerator:
         yyyymmdd_first = start_datetime.strftime("%Y%m%d")
         yyyymmdd_last = stop_datetime.strftime("%Y%m%d")
         hh_first = start_datetime.strftime("%H")
-    
+        
+        # Set the date cycle frequency.
+        date_cycle_freq_day = step_days if step_days > 0 else 1
+
         # Read platform scheduler configuration.
         sched = self.platform_params.get("sched")
     
@@ -946,7 +949,7 @@ class ConfigGenerator:
             "exp_ecf_path": str(exp_ecf_path),
             "yyyymmdd_first": yyyymmdd_first,
             "yyyymmdd_last": yyyymmdd_last,
-            "date_cycle_freq_day": step_days,
+            "date_cycle_freq_day": date_cycle_freq_day,
             "hh_first": hh_first,
             "sched": sched,
             **task_flags,

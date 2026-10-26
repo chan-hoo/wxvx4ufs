@@ -3,7 +3,7 @@ app:
   exp_case_name: test_eagle
   platform: ursa
   run_type: ctest
-  workflow_manager: None
+  workflow_manager: ecflow
   workflow_type: eagle
 nco_vars:
   envir: test
@@ -37,7 +37,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:15:00"
-    external_data: true
+    external_data: false
   vx_grid2obs:
     groups:
       - common
@@ -47,7 +47,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:15:00"
-    external_data: true
+    external_data: false
   plot_vx_grid:
     groups:
       - common
