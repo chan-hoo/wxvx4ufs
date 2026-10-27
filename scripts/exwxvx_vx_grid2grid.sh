@@ -17,11 +17,27 @@ workflow_type=$(read_yaml "${config_common}" "workflow_type")
 
 # Copy input files to temporary working directory.
 if [[ "${run_type}" == "ctest" ]]; then
-  cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/post_prewxvx" ${DATA}/.
+  # Truth data
   if [[ "${external_data}" == "false" ]]; then
     mkdir -p ${DATA}/grids
     cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/grids/truth" ${DATA}/grids/.
   fi
+  # Fallback data
+  fallback_prewxvx="${FIXwxvx}/data_${platform}/ctest/${workflow_type}/post_prewxvx"
+else
+  # Fallback data
+  fallback_prewxvx=""
+fi
+
+## Result file of prewxvx
+if [[ -d "${COMIN}/post_prewxvx" ]] && [[ -n "$(ls -A "${COMIN}/post_prewxvx")" ]]; then
+  cp -rp "${COMIN}/post_prewxvx" "${DATA}/."
+  echo "Using prewxvx results from ${COMIN}/post_prewxvx"
+elif [[ -d "${fallback_prewxvx}" ]] && [[ -n "$(ls -A "${fallback_prewxvx}")" ]]; then
+  cp -rp "${fallback_prewxvx}" "${DATA}/."
+  echo "Using prewxvx results from ${fallback_prewxvx}"
+else
+  err_exit "No valid prewxvx results directory found."
 fi
 
 # Update configuration file with temporary working directory.
