@@ -1,3 +1,4 @@
 export stack_oneapi_ver="2024.2.1"
+export stack_impi_ver="2021.13"
 export prod_util_ver="2.1.1"
 export ecflow_ver="5.11.4"

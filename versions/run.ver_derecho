@@ -1,3 +1,4 @@
 export stack_oneapi_ver="2024.2.1"
+export stack_cray_mpich_ver="8.1.29"
 export prod_util_ver="2.1.1"
 export ecflow_ver="5.11.4"
