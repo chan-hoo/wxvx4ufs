@@ -1057,12 +1057,6 @@ module list
     
         generated_files.append(stop_server_path)
 
-        logger.info(
-            "Generated %d ecFlow file(s) in %s.",
-            len(generated_files),
-            exp_case_path,
-        )
-
         # Copy all files from the ecFlow include directory.
         include_dir = ecf_template_dir / "include"
 
@@ -1084,6 +1078,12 @@ module list
                 source_file,
                 destination_file,
             )
+
+        logger.info(
+            "Generated %d ecFlow file(s) in %s.",
+            len(generated_files),
+            exp_case_path,
+        )
 
         return generated_files
 

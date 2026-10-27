@@ -45,16 +45,38 @@
   {%- endif %}
 {%- endif %}
 
+{%- if workflow_manager == "ecflow" %}
+%include <head.h>
+{%- else %}
+date
+export PS4='+ $SECONDS + '
 set -xue
+{%- endif %}
+
+# Home directory
+export HOMEwxvx={{ HOMEwxvx }}
+
+# ---------------------------------------------------------------------
+# Load module file for task
+# ---------------------------------------------------------------------
+{%- if platform == "gaea-c6" %}
+module reset
+{%- else %}
+module purge
+{%- endif %}
+source ${HOMEwxvx}/versions/run.ver_{{ platform }}
+module use ${HOMEwxvx}/modulefiles
+module load modules_{{ platform }}.intel
+module list
+
+# Activate conda environment
+source ${HOMEwxvx}/sorc/activate_wxvx.sh
 
 # ---------------------------------------------------------------------
 # Environment variables
 # ---------------------------------------------------------------------
-# Home directory
-export HOMEwxvx={{ HOMEwxvx }}
 # PDY/cyc
 {%- if workflow_manager == "ecflow" %}
-%include <head.h>
 export PDY=%ECF_DATE%
 export cyc=%CYC%
 {%- else %}
@@ -82,22 +104,6 @@ export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
 # Path to experimental case directory
 export exp_case_path="{{ exp_case_path }}"
-
-# ---------------------------------------------------------------------
-# Load module file for task
-# ---------------------------------------------------------------------
-{%- if platform == "gaea-c6" %}
-module reset
-{%- else %}
-module purge
-{%- endif %}
-source ${HOMEwxvx}/versions/run.ver_{{ platform }}
-module use ${HOMEwxvx}/modulefiles
-module load modules_{{ platform }}.intel
-module list
-
-# Activate conda environment
-source ${HOMEwxvx}/sorc/activate_wxvx.sh
 
 # ---------------------------------------------------------------------
 # Run J-job script

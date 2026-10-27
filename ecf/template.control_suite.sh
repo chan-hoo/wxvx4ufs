@@ -12,7 +12,7 @@ fi
 if [ -z "${ECF_PORT}" ]; then
   export ECF_PORT=$(( $(id -u) + 1500 ))
 fi
-export ECF_HOME="{{ exp_case_path }}/ecf"
+export ECF_HOME="{{ exp_ecf_path }}"
 export ECF_SUITE="{{ exp_case_name }}"
 
 echo "ECF_HOME: ${ECF_HOME}"
