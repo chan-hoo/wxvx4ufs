@@ -7,9 +7,6 @@ prepend_path("MODULEPATH", "/glade/work/epicufsrt/contrib/spack-stack/derecho/sp
 stack_oneapi_ver=os.getenv("stack_oneapi_ver") or "2024.2.1"
 load(pathJoin("stack-oneapi", stack_oneapi_ver))
 
-stack_cray_mpich_ver=os.getenv("stack-cray-mpich_ver") or "8.1.29"
-load(pathJoin("stack-cray-mpich", stack_cray_mpich_ver))
-
 prod_util_ver=os.getenv("prod_util_ver") or "2.1.1"
 load(pathJoin("prod_util", prod_util_ver))
 
