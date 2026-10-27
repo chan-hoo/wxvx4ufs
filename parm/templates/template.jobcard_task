@@ -45,14 +45,6 @@
   {%- endif %}
 {%- endif %}
 
-{%- if workflow_manager == "ecflow" %}
-%include <head.h>
-{%- else %}
-date
-export PS4='+ $SECONDS + '
-set -xue
-{%- endif %}
-
 # Home directory
 export HOMEwxvx={{ HOMEwxvx }}
 
@@ -75,6 +67,14 @@ source ${HOMEwxvx}/sorc/activate_wxvx.sh
 # ---------------------------------------------------------------------
 # Environment variables
 # ---------------------------------------------------------------------
+{%- if workflow_manager == "ecflow" %}
+%include <head.h>
+{%- else %}
+date
+export PS4='+ $SECONDS + '
+set -xue
+{%- endif %}
+
 # PDY/cyc
 {%- if workflow_manager == "ecflow" %}
 export PDY=%ECF_DATE%
@@ -111,5 +111,6 @@ export exp_case_path="{{ exp_case_path }}"
 ${HOMEwxvx}/jobs/JWXVX_{{ task_name_upper }}
 
 {%- if workflow_manager == "ecflow" %}
+
 %include <tail.h>
 {%- endif %}
