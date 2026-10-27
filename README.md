@@ -27,16 +27,6 @@ cd wxvx4ufs/sorc
 ./build_wxvx4ufs.sh
 ```
 
-The script performs the following operations:
-
-1. Determines the system architecture.
-2. Downloads the specified Miniforge installer if a local installation does not already exist.
-3. Installs Miniforge under `sorc/conda/`.
-4. Configures the Conda environment directory and package cache.
-5. Creates `wxvx` environment from YAML.
-
-The installation requires network access to the Miniforge release and Conda package repositories.
-
 ## 2. Activate the wxvx Environment
 
 After installation, activate the environment by sourcing the activation script:
