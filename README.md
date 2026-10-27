@@ -24,7 +24,7 @@ git clone https://github.com/chan-hoo/wxvx4ufs.git
 
 ```bash
 cd wxvx4ufs/sorc
-./build_wxvx.sh
+./build_wxvx4ufs.sh
 ```
 
 The script performs the following operations:

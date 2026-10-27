@@ -5,3 +5,4 @@ parm/PTMP/
 sorc/conda/
 sorc/condarc
 sorc/activate_wxvx.sh
+sorc/activate_plot.sh
