@@ -675,6 +675,7 @@ class ConfigGenerator:
                 f"Unknown platform: {platform_name!r}"
             ) 
         platform = platforms[platform_name]
+        sched = platform.get("sched")
     
         # Determine the cycle date.
         cycles = self.config.get("common", {}).get("cycles", {})
@@ -739,7 +740,11 @@ class ConfigGenerator:
                     f"{run}_{task_name}_%ECF_DATE%%CYC%_%ECF_TRYNO%.log"
                 )
             else:
-                output_fn = f"{run}_{task_name}.%j.log"
+                if sched == "slurm":
+                    output_fn = f"{run}_{task_name}.%j.log"
+                else:
+                    output_fn = f"{run}_{task_name}.log"
+
             output_name = str(log_dir / output_fn)
 
             context = {
