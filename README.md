@@ -35,20 +35,6 @@ After installation, activate the environment by sourcing the activation script:
 source activate_wxvx.sh
 ```
 
-Verify the active environment:
-
-```bash
-echo "$CONDA_PREFIX"
-which python
-which wxvx
-```
-
-The Python interpreter and `wxvx` executable should point to the local environment under:
-
-```text
-sorc/conda/envs/wxvx/
-```
-
 ### Deactivate the Environment
 
 If the environment is active and Conda is initialized in your current shell:
@@ -140,8 +126,16 @@ cd exp_cases/[app.exp_case_name]/job_cards
 
 Submit the desired task:
 
+- Slurm (Ursa / Hercules / Orion / Gaea-C6):
+
 ```bash
 sbatch jwxvx_[task_name]
+```
+
+- PBS pro (Derecho):
+
+```bash
+qsub jwxvx_[task_name]
 ```
 
 ## 5. Results and Log Files
