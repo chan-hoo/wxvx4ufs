@@ -25,11 +25,11 @@ suite {{ exp_case_name }}
   {% endif %}
 {% endif %}
 {% if task_flag_postwxvx_grid %}
-        task jwxvx_plot_vx_grid
+        task jwxvx_postwxvx_grid
             trigger jwxvx_vx_grid2grid == complete
 {% endif %}
 {% if task_flag_postwxvx_obs %}
-        task jwxvx_plot_vx_obs
+        task jwxvx_postwxvx_obs
             trigger jwxvx_vx_grid2obs == complete
 {% endif %}
     endfamily
