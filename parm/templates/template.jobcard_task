@@ -58,7 +58,7 @@ module purge
 {%- endif %}
 source ${HOMEwxvx}/versions/run.ver_{{ platform }}
 module use ${HOMEwxvx}/modulefiles
-module load modules_{{ platform }}.intel
+module load modules_{{ platform }}
 module list
 
 # Activate conda environment
