@@ -62,7 +62,11 @@ module load modules_{{ platform }}
 module list
 
 # Activate conda environment
+{%- if task_name in ["postwxvx_grid", "postwxvx_obs"] %}
+source ${HOMEwxvx}/sorc/activate_plot.sh
+{%- else %}
 source ${HOMEwxvx}/sorc/activate_wxvx.sh
+{%- endif %}
 
 # ---------------------------------------------------------------------
 # Environment variables
