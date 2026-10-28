@@ -86,7 +86,51 @@ By default, the script generates the `exp_cases` and `PTMP` directories under th
 
 ## 4. Job Submission
 
-Until `ecFlow` integration is available, jobs must be submitted manually.
+### ecFlow option (`app.workflow_manager: ecflow`)
+
+Load module(s) for ecFlow:
+
+- On Ursa / Derecho:
+
+```bash
+module load ecflow/5.11.4
+```
+
+- On Hercules / Orion / Gaea-C6:
+
+```bash
+cd ..
+module use modulefiles
+module load modules_[hercules/orion/gaea-c6]
+```
+
+Start the ecFlow server if necessary:
+
+```bash
+cd parm/exp_cases/[app.exp_case_name]/ecf
+./start_server.sh
+```
+
+Begin the case-specific ecFlow suite:
+
+```bash
+./begin_suite.sh
+```
+
+Open the ecFlow GUI:
+
+```bash
+ecflow_ui &
+```
+Note that the ecFlow GUI does not work correctly on Gaea-C6.
+
+Stop the ecFlow server once all workflow tasks are complete:
+
+```bash
+./stop_server.sh
+```
+
+###  Manual submission of job cards (`app.workflow_manager: None`)
 
 Navigate to the job cards directory for your experimental case:
 
