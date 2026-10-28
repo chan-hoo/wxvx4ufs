@@ -61,4 +61,3 @@ fi
 
 # Copy result files/directories to COMOUT
 cp -rp ${basic_outdir} ${COMOUT}/.
-cp -rp ${spatial_outdir} ${COMOUT}/.
