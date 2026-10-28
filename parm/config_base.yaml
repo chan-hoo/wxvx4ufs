@@ -19,6 +19,8 @@ task_list:
   - prewxvx
   - vx_grid2grid
   - vx_grid2obs
+  - postwxvx_grid
+  - postwxvx_obs
 tasks:
   prewxvx:
     groups:
@@ -49,23 +51,23 @@ tasks:
       nprocs: 1
       walltime: "00:15:00"
     external_data: false
-  plot_vx_grid:
+  postwxvx_grid:
     groups:
       - common
-      - plot_vx_grid
+      - postwxvx_grid
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:05:00"
     external_data: false
-  plot_vx_obs:
+  postwxvx_obs:
     groups:
       - common
-      - plot_vx_obs
+      - postwxvx_obs
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:05:00"
     external_data: false
 common:
   cycles:
@@ -186,10 +188,10 @@ prewxvx:
     regridder_kwargs:
       method: conservative_normed
     target_grid_path: '{{ DATA }}/data/global_one_degree.nc'
-plot_vx_grid:
+postwxvx_grid:
   work_path: '{{ DATA }}'
-  stat_prefix: grid_stat
-plot_vx_obs:
+  stat_prefix: grid_stat_nested_global
+postwxvx_obs:
   work_path: '{{ DATA }}'
-  stat_prefix: point_stat
+  stat_prefix: point_stat_nested_global
 

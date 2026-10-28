@@ -327,8 +327,7 @@ class ConfigGenerator:
         Special handling:
           - common: add metadata.
           - prewxvx: generate frequency, lead time, dates, and variables.
-          - plot_vx_grid / plot_vx_obs: transform common configuration
-            into plotting parameters.
+          - postwxvx_grid / postwxvx_obs: transform common configuration.
         """
         if not isinstance(group_names, list):
             raise ValueError(
@@ -400,8 +399,8 @@ class ConfigGenerator:
         # -------------------------------------------------------------
         special_tasks = {
             "prewxvx",
-            "plot_vx_grid",
-            "plot_vx_obs",
+            "postwxvx_grid",
+            "postwxvx_obs",
         }
     
         if task_name in special_tasks:
@@ -471,8 +470,8 @@ class ConfigGenerator:
                     variables.keys()
                 )
     
-            # plot_vx_grid and plot_vx_obs
-            elif task_name in {"plot_vx_grid", "plot_vx_obs"}:
+            # postwxvx_grid and postwxvx_obs
+            elif task_name in {"postwxvx_grid", "postwxvx_obs"}:
     
                 # Dates retain the T separator.
                 start = cycles.get("start")
@@ -511,7 +510,7 @@ class ConfigGenerator:
                         hours, minutes, seconds = map(
                             int, value.split(":")
                         )
-                        return hours + minutes / 60 + seconds / 3600
+                        return hours + minutes
     
                     return int(value)
     

@@ -24,11 +24,11 @@ suite {{ exp_case_name }}
             trigger jwxvx_prewxvx == complete
   {% endif %}
 {% endif %}
-{% if task_flag_plot_vx_grid %}
+{% if task_flag_postwxvx_grid %}
         task jwxvx_plot_vx_grid
             trigger jwxvx_vx_grid2grid == complete
 {% endif %}
-{% if task_flag_plot_vx_obs %}
+{% if task_flag_postwxvx_obs %}
         task jwxvx_plot_vx_obs
             trigger jwxvx_vx_grid2obs == complete
 {% endif %}
