@@ -2,7 +2,7 @@
 
 **Weather Verification (wxvx) for Unified Forecat System (UFS) including Global Workflow, EAGLE, and RRFS**
 
-This repository provides scripts to install and configure [`wxvx`](https://github.com/NOAA-GSL/wxvx) for use with UFS applications, including Global workflow and RRFS workflow, on NOAA RDHPCS platforms.
+This repository provides scripts to install and configure [`wxvx`](https://github.com/NOAA-GSL/wxvx) for use with UFS applications, including Global workflow and RRFS workflow, on NOAA RDHPCS platforms ([user's guide](https://wxvx4ufs.readthedocs.io/en/latest/index.html)).
 
 ## 1. Build and Installation
 
