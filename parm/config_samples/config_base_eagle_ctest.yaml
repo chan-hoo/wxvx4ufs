@@ -1,0 +1,197 @@
+app:
+  account: epic
+  exp_case_name: test_eagle
+  platform: ursa
+  run_type: ctest
+  workflow_manager: ecflow
+  workflow_type: eagle
+nco_vars:
+  envir: test
+  KEEPDATA: 'YES'
+  model_ver: v0.0.1
+  NET: test_net
+  OPS_PATH: AUTO
+  RUN: AUTO
+config_common:
+  - app
+  - nco_vars
+task_list:
+  - prewxvx
+  - vx_grid2grid
+  - vx_grid2obs
+  - postwxvx_grid
+  - postwxvx_obs
+tasks:
+  prewxvx:
+    groups:
+      - common
+      - prewxvx
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
+    external_data: false
+  vx_grid2grid:
+    groups:
+      - common
+      - vx_common
+      - vx_grid2grid
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
+    external_data: false
+  vx_grid2obs:
+    groups:
+      - common
+      - vx_common
+      - vx_grid2obs
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:15:00"
+    external_data: false
+  postwxvx_grid:
+    groups:
+      - common
+      - postwxvx_grid
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:05:00"
+    external_data: false
+  postwxvx_obs:
+    groups:
+      - common
+      - postwxvx_obs
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:05:00"
+    external_data: false
+common:
+  cycles:
+    start: '2022-02-03T12:00:00'
+    step: 0
+    stop: '2022-02-03T12:00:00'
+  leadtimes:
+    start: '6:00:00'
+    step: '6:00:00'
+    stop: '24'
+  variables:
+    t2m:
+      level_type: heightAboveGround
+      levels:
+      - 2
+      name: 2t
+    gh:
+      level_type: isobaricInhPa
+      levels:
+      - 500
+      name: gh
+    sp:
+      level_type: surface
+      name: sp
+    t:
+      level_type: isobaricInhPa
+      levels:
+      - 850
+      name: t
+    u:
+      level_type: isobaricInhPa
+      levels:
+      - 250
+      name: u
+    u10:
+      level_type: heightAboveGround
+      levels:
+      - 10
+      name: 10u
+    v:
+      level_type: isobaricInhPa
+      levels:
+      - 250
+      name: v
+    v10:
+      level_type: heightAboveGround
+      levels:
+      - 10
+      name: 10v
+vx_common:
+  forecast:
+    coords:
+      latitude: latitude
+      level: level
+      longitude: longitude
+      time:
+        inittime: forecast_reference_time
+        validtime: time
+    projection:
+      proj: latlon
+    name: nested_global
+    path: '{{ meta.post_files }}/nested-global.{{ yyyymmdd[:4] }}-{{ yyyymmdd[4:6] }}-{{ yyyymmdd[6:8] }}T{{ hh }}.{{ "%02d" % meta.max_leadtime }}h.nc'
+  meta:
+    workdir: '{{ DATA }}'
+    grids: '{{ meta.workdir }}/grids'
+    max_leadtime: 24
+    post_files: '{{ meta.workdir }}/post_prewxvx'
+  paths:
+    grids:
+      forecast: '{{ meta.workdir }}/grids/forecast'
+    run: '{{ meta.workdir }}'
+vx_grid2grid:
+  truth:
+    name: GFS
+    type: grid
+    url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
+  ncdiffs: true
+  regrid:
+    method: NEAREST
+    to: forecast
+  paths:
+    grids:
+      truth: '{{ meta.workdir }}/grids/truth'
+vx_grid2obs:
+  truth:
+    name: PREPBUFR
+    type: point
+    url: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
+  regrid:
+    method: BILIN
+    to: G104
+  paths:
+    obs: '{{ meta.workdir }}/obs'
+prewxvx:
+  forecast_path: '{{ DATA }}/inference_output'
+  lam_index: 64220
+  lcc_info:
+    n_x: 338
+    n_y: 190
+  levels:
+  - 250
+  - 500
+  - 850
+  output_path: '{{ DATA }}/post_prewxvx'
+  model_type: nested-global
+  anemoi_reference_dataset_kwargs:
+    adjust: all
+    cutout:
+    - dataset: '{{ DATA }}/data/hrrr.zarr'
+      trim_edge:
+      - 10
+      - 11
+      - 10
+      - 11
+    - dataset: '{{ DATA }}/data/gfs.zarr'
+    min_distance_km: 0
+  forecast_regrid_kwargs:
+    regridder_kwargs:
+      method: conservative_normed
+    target_grid_path: '{{ DATA }}/data/global_one_degree.nc'
+postwxvx_grid:
+  work_path: '{{ DATA }}'
+  stat_prefix: grid_stat_nested_global
+postwxvx_obs:
+  work_path: '{{ DATA }}'
+  stat_prefix: point_stat_nested_global
+
