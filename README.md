@@ -55,17 +55,22 @@ The main configuration files are:
 - `config_base.yaml`: Define the basic configuration parameters
 - `config_platform.yaml`: Define the platform-specific configuration parameters
 
+Copy the sample configuration file for EAGLE ctest:
+```bash
+cp config_samples/config_base_eagle_ctest.yaml config.yaml
+```
+
 Before proceeding, review the parameters `account` ,`exp_case_name`, and `platform`.
 
 ```bash
-vim config_base.yaml
+vim config.yaml
 ```
 You can check the list of tasks `task_list` selected from the available tasks under the `tasks` group.
 
 Run the set-up script to generate the experimental case configuration and supporting directories:
 
 ```bash
-./setup.py
+./setup.py --config config.yaml
 ```
 
 By default, the script generates the `exp_cases` and `PTMP` directories under the `parm` directory.
