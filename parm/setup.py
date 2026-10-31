@@ -62,6 +62,65 @@ def format_datetime(value):
         f"Expected datetime or string, got {type(value).__name__}"
     )
 
+
+def format_iso_datetime(value: Any) -> str:
+    """Format a date keeping the T separator (YYYY-MM-DDTHH:MM:SS)."""
+    if isinstance(value, datetime):
+        return value.isoformat(timespec="seconds")
+
+    return str(value)
+
+
+def leadtime_to_freq(step: Any) -> Any:
+    """Convert a step such as '6:00:00' to '6h'; pass other values through."""
+    if isinstance(step, str) and ":" in step:
+        return f"{int(step.split(':')[0])}h"
+
+    return step
+
+
+def time_to_hours(value: Any) -> int:
+    """Convert 'H:M:S' (or a number) to whole hours."""
+    if isinstance(value, str) and ":" in value:
+        hours, minutes, seconds = map(int, value.split(":"))
+        return (hours * 3600 + minutes * 60 + seconds) // 3600
+
+    return int(value)
+
+
+def deep_merge(target: dict, source: dict) -> dict:
+    """
+    Recursively merge source into target without modifying source.
+
+    Values from source take precedence; nested dictionaries are merged
+    and assigned values are deep-copied to avoid shared references.
+    """
+    for key, value in source.items():
+        if (
+            key in target
+            and isinstance(target[key], dict)
+            and isinstance(value, dict)
+        ):
+            deep_merge(target[key], value)
+        else:
+            target[key] = deepcopy(value)
+
+    return target
+
+
+def make_env(template_dir: Path, **options: Any) -> Environment:
+    """Create a strict Jinja2 environment for a template directory."""
+    return Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        undefined=StrictUndefined,
+        **options,
+    )
+
+
+REQUIRED_NCO_VARS = (
+    "envir", "KEEPDATA", "model_ver", "NET", "RUN", "OPS_PATH",
+)
+
 # ---------------------------------------------------------------------
 # Configuration generator
 # ---------------------------------------------------------------------
@@ -73,7 +132,7 @@ class ConfigGenerator:
     # Initialize
     # -----------------------------------------------------------------
 
-    def __init__(self, config_file, *args, **kwargs):
+    def __init__(self, config_file):
         """
         Initialize the configuration generator.
     
@@ -99,7 +158,7 @@ class ConfigGenerator:
         self.exp_cases_dir = self.script_dir / "exp_cases"
     
         # Default OPS directory under the parm directory.
-        self.default_ops_path = self.repo_dir / "parm" / "PTMP"
+        self.default_ops_path = self.script_dir / "PTMP"
     
         self.config: dict[str, Any] = {}
         self.platform_config: dict[str, Any] = {}
@@ -225,36 +284,6 @@ class ConfigGenerator:
         return self.platform_params
 
     # -----------------------------------------------------------------
-    # Recursively merge group parameters
-    # -----------------------------------------------------------------
-
-    def deep_merge(
-        self,
-        target: dict,
-        source: dict,
-    ) -> dict:
-        """
-        Recursively merge source into target without modifying source.
-    
-        - Preserve parameters that exist only in either dictionary.
-        - Recursively merge nested dictionaries.
-        - If the same parameter exists in both dictionaries,
-          the value from source takes precedence.
-        - Deep-copy assigned values to prevent shared references.
-        """
-        for key, value in source.items():
-            if (
-                key in target
-                and isinstance(target[key], dict)
-                and isinstance(value, dict)
-            ):
-                self.deep_merge(target[key], value)
-            else:
-                target[key] = deepcopy(value)
-    
-        return target
-
-    # -----------------------------------------------------------------
     # Determine the output directory
     # -----------------------------------------------------------------
 
@@ -263,7 +292,7 @@ class ConfigGenerator:
         Determine the output directory using app.exp_case_name.
 
         Expected path:
-            wxvx4gw/../exp_cases/<exp_case_name>/config/
+            wxvx4gw/../exp_cases/<exp_case_name>/configs/
         """
         if "app" not in self.config:
             raise ValueError(
@@ -336,9 +365,6 @@ class ConfigGenerator:
             )
 
         task_config: dict[str, Any] = {}
-        
-        if hpc_params is None:
-            hpc_params = {}
 
         def merge_groups(
             names: list[str],
@@ -386,7 +412,7 @@ class ConfigGenerator:
                     )
     
                 elif isinstance(group_config, dict):
-                    self.deep_merge(target, group_config)
+                    deep_merge(target, group_config)
     
                 else:
                     raise ValueError(
@@ -433,21 +459,15 @@ class ConfigGenerator:
             leadtimes = common.get("leadtimes", {})
             variables = common.get("variables", {})
 
+            leadtime_step = leadtimes.get("step")
+            start = cycles.get("start")
+            stop = cycles.get("stop")
+
+            if leadtime_step is not None:
+                task_config["freq"] = leadtime_to_freq(leadtime_step)
+
             # prewxvx
             if task_name == "prewxvx":
-    
-                # Forecast frequency: '6:00:00' -> '6h'.
-                leadtime_step = leadtimes.get("step")
-    
-                if leadtime_step is not None:
-                    if (
-                        isinstance(leadtime_step, str)
-                        and ":" in leadtime_step
-                    ):
-                        hours = int(leadtime_step.split(":")[0])
-                        task_config["freq"] = f"{hours}h"
-                    else:
-                        task_config["freq"] = leadtime_step
     
                 # Maximum forecast lead time: '24' -> 24.
                 leadtime_stop = leadtimes.get("stop")
@@ -456,9 +476,6 @@ class ConfigGenerator:
                     task_config["lead_time"] = int(leadtime_stop)
     
                 # Dates use a space separator.
-                start = cycles.get("start")
-                stop = cycles.get("stop")
-    
                 if start is not None:
                     task_config["start_date"] = format_datetime(start)
     
@@ -474,46 +491,13 @@ class ConfigGenerator:
             elif task_name in {"postwxvx_grid", "postwxvx_obs"}:
     
                 # Dates retain the T separator.
-                start = cycles.get("start")
-                stop = cycles.get("stop")
-    
                 if start is not None:
-                    task_config["start_date"] = (
-                        start.isoformat(timespec="seconds")
-                        if isinstance(start, datetime)
-                        else str(start)
-                    )
+                    task_config["start_date"] = format_iso_datetime(start)
     
                 if stop is not None:
-                    task_config["end_date"] = (
-                        stop.isoformat(timespec="seconds")
-                        if isinstance(stop, datetime)
-                        else str(stop)
-                    )
-    
-                # Forecast frequency: '6:00:00' -> '6h'.
-                leadtime_step = leadtimes.get("step")
-    
-                if leadtime_step is not None:
-                    if (
-                        isinstance(leadtime_step, str)
-                        and ":" in leadtime_step
-                    ):
-                        hours = int(leadtime_step.split(":")[0])
-                        task_config["freq"] = f"{hours}h"
-                    else:
-                        task_config["freq"] = leadtime_step
+                    task_config["end_date"] = format_iso_datetime(stop)
     
                 # Convert lead times to integer hours.
-                def time_to_hours(value):
-                    if isinstance(value, str) and ":" in value:
-                        hours, minutes, seconds = map(
-                            int, value.split(":")
-                        )
-                        return hours + minutes
-    
-                    return int(value)
-    
                 task_config["leadtimes"] = {
                     "start": time_to_hours(leadtimes["start"]),
                     "end": time_to_hours(leadtimes["stop"]),
@@ -627,19 +611,12 @@ class ConfigGenerator:
         # Load the job-card template.
         template_dir = self.script_dir / "templates"
     
-        env = Environment(
-            loader=FileSystemLoader(str(template_dir)),
-            undefined=StrictUndefined,
-            keep_trailing_newline=True,
-        )
+        env = make_env(template_dir, keep_trailing_newline=True)
     
         template = env.get_template("template.jobcard_task")
     
-        # Load platform-specific configuration.
-        platform_file = self.script_dir / "config_platform.yaml"
-    
-        with platform_file.open("r", encoding="utf-8") as stream:
-            platform_config = yaml.safe_load(stream)
+        # Platform configuration was loaded by load_config_platform().
+        platform_config = self.platform_config
 
         # Get app configuration from config_base.yaml
         app_config = self.config.get("app", {})
@@ -648,25 +625,17 @@ class ConfigGenerator:
 
         # Get NCO variables from config_base.yaml.
         nco_vars = self.config.get("nco_vars", {})
-        envir = nco_vars.get("envir")        
-        if not envir:
-            raise ValueError("Missing required nco_vars.envir.")
-        keepdata = nco_vars.get("KEEPDATA")
-        if not keepdata:
-            raise ValueError("Missing required nco_vars.KEEPDATA.")
-        model_ver = nco_vars.get("model_ver")
-        if not model_ver:
-            raise ValueError("Missing required nco_vars.model_ver.")
-        net = nco_vars.get("NET")
-        if not net:
-            raise ValueError("Missing required nco_vars.NET.")
-        run = nco_vars.get("RUN")
-        if not run:
-            raise ValueError("Missing required nco_vars.RUN.")
-        ops_path = nco_vars.get("OPS_PATH")
-        if not ops_path:
-            raise ValueError("Missing required nco_vars.OPS_PATH.")
-        ops_path = Path(ops_path)
+        missing = [k for k in REQUIRED_NCO_VARS if not nco_vars.get(k)]
+        if missing:
+            raise ValueError(
+                "Missing required nco_vars: " + ", ".join(missing)
+            )
+        envir = nco_vars["envir"]
+        keepdata = nco_vars["KEEPDATA"]
+        model_ver = nco_vars["model_ver"]
+        net = nco_vars["NET"]
+        run = nco_vars["RUN"]
+        ops_path = Path(nco_vars["OPS_PATH"])
 
         platforms = platform_config.get("platforms", {}) 
         if platform_name not in platforms:
@@ -853,11 +822,8 @@ class ConfigGenerator:
         definition_template_name = definition_templates[0].name
     
         # Use a separate Jinja2 environment for the definition template.
-        defs_env = Environment(
-            loader=FileSystemLoader(str(defs_template_dir)),
-            undefined=StrictUndefined,
-            trim_blocks=True,
-            lstrip_blocks=True,
+        defs_env = make_env(
+            defs_template_dir, trim_blocks=True, lstrip_blocks=True
         )
 
         # Read cycle configuration.
@@ -975,11 +941,8 @@ class ConfigGenerator:
         generated_files = [definition_path]
 
         # Render supporting shell scripts.
-        scripts_env = Environment(
-            loader=FileSystemLoader(str(ecf_template_dir)),
-            undefined=StrictUndefined,
-            trim_blocks=True,
-            lstrip_blocks=True,
+        scripts_env = make_env(
+            ecf_template_dir, trim_blocks=True, lstrip_blocks=True
         )
     
         script_templates = {
