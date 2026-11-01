@@ -41,8 +41,8 @@ fi
 
 # Update configuration file with temporary working directory.
 config_fn="config_vx_grid2obs.yaml"
-cp -p "${exp_case_path}/configs/${config_fn}" "${DATA}/."
-sed -i "s|{{ DATA }}|${DATA}|g" ${config_fn}
+config_content=$(<"${exp_case_path}/configs/${config_fn}")
+printf '%s\n' "${config_content//'{{ DATA }}'/${DATA}}" > "${DATA}/${config_fn}"
 
 # Run wxvx.
 export pgm="wxvx"
