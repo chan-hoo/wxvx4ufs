@@ -21,13 +21,14 @@ from __future__ import annotations
 
 import argparse
 import logging
+import re
 import sys
 import shutil
 from pathlib import Path
 from typing import Any
 from copy import deepcopy
 from datetime import datetime
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
 import yaml
 
@@ -115,6 +116,29 @@ def make_env(template_dir: Path, **options: Any) -> Environment:
         undefined=StrictUndefined,
         **options,
     )
+
+
+def resolve_config_references(value: Any, context: dict[str, Any]) -> Any:
+    """Resolve configuration-group expressions, preserving runtime templates."""
+    env = Environment(undefined=StrictUndefined)
+
+    def render_expression(match: re.Match) -> str:
+        expression = match.group()
+        names = meta.find_undeclared_variables(env.parse(expression))
+        if names and names <= context.keys():
+            return env.from_string(expression).render(**context)
+        return expression
+
+    def resolve(item: Any) -> Any:
+        if isinstance(item, dict):
+            return {key: resolve(child) for key, child in item.items()}
+        if isinstance(item, list):
+            return [resolve(child) for child in item]
+        if isinstance(item, str):
+            return re.sub(r"{{.*?}}", render_expression, item, flags=re.DOTALL)
+        return item
+
+    return resolve(value)
 
 
 REQUIRED_NCO_VARS = (
@@ -437,6 +461,7 @@ class ConfigGenerator:
 
         # Merge the remaining task configuration groups.
         merge_groups(group_names, task_config)
+        task_config = resolve_config_references(task_config, self.config)
 
         # -------------------------------------------------------------
         # Add task metadata to config_common.yaml.

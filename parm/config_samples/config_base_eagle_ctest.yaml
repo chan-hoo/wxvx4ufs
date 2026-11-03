@@ -128,8 +128,8 @@ vx_common:
         validtime: time
     projection:
       proj: latlon
-    name: nested_global
-    path: '{{ meta.post_files }}/nested-global.{{ yyyymmdd[:4] }}-{{ yyyymmdd[4:6] }}-{{ yyyymmdd[6:8] }}T{{ hh }}.{{ "%02d" % meta.max_leadtime }}h.nc'
+    name: '{{ app.exp_case_name }}'
+    path: '{{ meta.post_files }}/{{ prewxvx.model_type }}.{{ yyyymmdd[:4] }}-{{ yyyymmdd[4:6] }}-{{ yyyymmdd[6:8] }}T{{ hh }}.{{ "%02d" % meta.max_leadtime }}h.nc'
   meta:
     workdir: '{{ DATA }}'
     grids: '{{ meta.workdir }}/grids'
@@ -190,8 +190,8 @@ prewxvx:
     target_grid_path: '{{ DATA }}/data/global_one_degree.nc'
 postwxvx_grid:
   work_path: '{{ DATA }}'
-  stat_prefix: grid_stat_nested_global
+  stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
 postwxvx_obs:
   work_path: '{{ DATA }}'
-  stat_prefix: point_stat_nested_global
+  stat_prefix: 'point_stat_{{ app.exp_case_name }}'
 
