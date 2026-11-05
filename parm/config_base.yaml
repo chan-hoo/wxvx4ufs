@@ -85,6 +85,9 @@ common:
       levels: *levels
       name: v
 vx_grid2grid:
+  forecast:
+    name: HRRRCast
+    path: '{{ meta.hrrrcast }}/{{ yyyymmdd }}/{{ hh }}/hrrrcast.avg.t{{ hh }}z.pgrb2.f{{ "%02d" % fh }}'
   meta:
     hrrrcast: '{{ nco_vars.DCOMINhrrrcast }}'
     url:
