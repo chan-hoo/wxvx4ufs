@@ -106,7 +106,7 @@ export DCOMROOT="${DCOMROOT:-${OPSROOT}/dcom}"
 # Intermediate calls for some NCO variables in J-job
 export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
-{%- if workflow_type == "hrrrcast" %}
+{%- if workflow_type == "hrrrcast" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
 export DCOMINhrrrcast="${DCOMINhrrrcast:-{{ DCOMINhrrrcast }}}"
 {%- endif %}
 # Path to experimental case directory
