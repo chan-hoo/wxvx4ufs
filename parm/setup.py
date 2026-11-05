@@ -773,7 +773,11 @@ class ConfigGenerator:
                 "task_name_upper": task_name.upper(),
                 "walltime": hpc.get("walltime", "00:30:00"),
                 "workflow_manager": app_config.get("workflow_manager"),
+                "workflow_type": app_config.get("workflow_type"),
             }
+
+            if app_config.get("workflow_type") == "hrrrcast":
+                context["DCOMINhrrrcast"] = nco_vars["DCOMINhrrrcast"]
     
             # Render the template.
             rendered = template.render(**context)
