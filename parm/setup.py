@@ -778,7 +778,9 @@ class ConfigGenerator:
 
             if app_config.get("workflow_type") == "hrrrcast":
                 context["DCOMINhrrrcast"] = nco_vars["DCOMINhrrrcast"]
-    
+            elif app_config.get("workflow_type") == "eagle":
+                context["DCOMINeagle"] = nco_vars["DCOMINeagle"]
+
             # Render the template.
             rendered = template.render(**context)
     

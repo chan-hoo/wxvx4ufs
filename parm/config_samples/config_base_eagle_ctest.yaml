@@ -6,6 +6,7 @@ app:
   workflow_manager: ecflow
   workflow_type: eagle
 nco_vars:
+  DCOMINeagle: '{{ HOMEwxvx }}/fix/ctest/eagle/inference_output'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
