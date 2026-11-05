@@ -1095,6 +1095,10 @@ class ConfigGenerator:
         if self.config["nco_vars"].get("RUN") == "AUTO":
             self.config["nco_vars"]["RUN"] = self.config["app"]["exp_case_name"]
 
+        self.config["nco_vars"] = resolve_config_references(
+            self.config["nco_vars"], {"HOMEwxvx": str(self.repo_dir)}
+        )
+
         output_dir = self.get_output_dir()
         generated_files: list[Path] = []
     
