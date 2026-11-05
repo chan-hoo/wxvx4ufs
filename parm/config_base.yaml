@@ -67,22 +67,22 @@ common:
       name: 10v
     gh:
       level_type: isobaricInhPa
-      levels: *level
+      levels: *levels
       name: gh
     sp:
       level_type: surface
       name: sp
     t:
       level_type: isobaricInhPa
-      levels: *level
+      levels: *levels
       name: t
     u:
       level_type: isobaricInhPa
-      levels: *level
+      levels: *levels
       name: u
     v:
       level_type: isobaricInhPa
-      levels: *level
+      levels: *levels
       name: v
 vx_grid2grid:
   meta:
