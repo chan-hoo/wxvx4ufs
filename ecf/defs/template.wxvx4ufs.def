@@ -9,26 +9,26 @@ suite {{ exp_case_name }}
         edit ECF_FILES "{{ exp_case_path }}/ecf/ecf_scripts"
         edit ECF_DATE %YMD%
         edit CYC {{ hh_first }}
-{% if task_flag_prewxvx %}
+{% if "prewxvx" in task_list %}
         task jwxvx_prewxvx
 {% endif %}
-{% if task_flag_vx_grid2grid %}
+{% if "vx_grid2grid" in task_list %}
         task jwxvx_vx_grid2grid
-  {% if task_flag_prewxvx %}
+        {% if "prewxvx" in task_list %}
             trigger jwxvx_prewxvx == complete
   {% endif %}
 {% endif %}
-{% if task_flag_vx_grid2obs %}
+{% if "vx_grid2obs" in task_list %}
         task jwxvx_vx_grid2obs
-  {% if task_flag_prewxvx %}
+        {% if "prewxvx" in task_list %}
             trigger jwxvx_prewxvx == complete
   {% endif %}
 {% endif %}
-{% if task_flag_postwxvx_grid %}
+{% if "postwxvx_grid" in task_list %}
         task jwxvx_postwxvx_grid
             trigger jwxvx_vx_grid2grid == complete
 {% endif %}
-{% if task_flag_postwxvx_obs %}
+{% if "postwxvx_obs" in task_list %}
         task jwxvx_postwxvx_obs
             trigger jwxvx_vx_grid2obs == complete
 {% endif %}

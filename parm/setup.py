@@ -934,7 +934,6 @@ class ConfigGenerator:
                 "to generate the ecFlow definition."
             )
 
-        # Generate task flags dynamically from config_base.yaml.
         configured_tasks = self.config.get("tasks", {})
         task_list = self.validate_task_list()
     
@@ -951,13 +950,6 @@ class ConfigGenerator:
                 f"Unknown task(s) in task_list: {sorted(unknown_tasks)}"
             )
     
-        # Generate a Boolean flag for every configured task.
-        # A flag is True only when its task is selected in task_list.
-        task_flags = {
-            f"task_flag_{task_name}": task_name in task_list
-            for task_name in configured_tasks
-        }
-    
         # Build the Jinja2 rendering context.
         context = {
             "exp_case_name": exp_case_name,
@@ -968,7 +960,7 @@ class ConfigGenerator:
             "date_cycle_freq_day": date_cycle_freq_day,
             "hh_first": hh_first,
             "sched": sched,
-            **task_flags,
+            "task_list": task_list,
         }
     
         # Render the ecFlow definition file.
