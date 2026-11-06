@@ -196,9 +196,6 @@ class ConfigGenerator:
         # Experiment cases directory under the parm directory.
         self.exp_cases_dir = self.script_dir / "exp_cases"
     
-        # Default OPS directory under the parm directory.
-        self.default_ops_path = self.script_dir / "PTMP"
-    
         self.config: dict[str, Any] = {}
         self.platform_config: dict[str, Any] = {}
         self.platform_params: dict[str, Any] = {}
@@ -1108,13 +1105,6 @@ class ConfigGenerator:
     
         self.load_config()
         self.load_config_platform()
-
-        # Resolve AUTO in some nco_vars parameters
-        if self.config["nco_vars"].get("OPS_PATH") == "AUTO":
-            self.config["nco_vars"]["OPS_PATH"] = str(self.default_ops_path)
-
-        if self.config["nco_vars"].get("RUN") == "AUTO":
-            self.config["nco_vars"]["RUN"] = self.config["app"]["exp_case_name"]
 
         self.config["nco_vars"] = resolve_config_references(
             self.config["nco_vars"],

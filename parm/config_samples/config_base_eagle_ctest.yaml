@@ -11,8 +11,8 @@ nco_vars:
   KEEPDATA: 'YES'
   model_ver: v0.0.1
   NET: test_net
-  OPS_PATH: AUTO
-  RUN: AUTO
+  OPS_PATH: '{{ HOMEwxvx }}/parm/PTMP'
+  RUN: '{{ app.exp_case_name }}'
 config_common:
   - app
   - nco_vars
