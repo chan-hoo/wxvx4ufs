@@ -88,9 +88,12 @@ def format_iso_datetime(value: Any) -> str:
 
 
 def leadtime_to_freq(step: Any) -> Any:
-    """Convert a step such as '6:00:00' to '6h'; pass other values through."""
+    """Convert lead-time steps to the hour format expected by freq."""
     if isinstance(step, str) and ":" in step:
         return f"{int(step.split(':')[0])}h"
+
+    if isinstance(step, (int, float)):
+        return f"{step}h"
 
     return step
 
