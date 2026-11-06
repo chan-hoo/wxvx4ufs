@@ -6,7 +6,7 @@ app:
   workflow_manager: ecflow
   workflow_type: eagle
 nco_vars:
-  DCOMINeagle: '{{ HOMEwxvx }}/fix/ctest/eagle/inference_output'
+  DCOMINeagle: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
@@ -163,7 +163,7 @@ vx_grid2obs:
   paths:
     obs: '{{ meta.workdir }}/obs'
 prewxvx:
-  forecast_path: '{{ DATA }}/inference_output'
+  forecast_path: '{{ nco_vars.DCOMINeagle }}'
   lam_index: 64220
   lcc_info:
     n_x: 338

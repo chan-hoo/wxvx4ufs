@@ -18,7 +18,7 @@ if [[ "${run_type}" == "ctest" ]]; then
   # EAGLE workflow case
   if [[ "${workflow_type}" == "eagle" ]]; then
     # Forecast output
-    cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/inference_output" ${DATA}/.
+#    cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/inference_output" ${DATA}/.
     # Reference datasets
     mkdir -p ${DATA}/data
     cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/prewxvx/data/hrrr.zarr" ${DATA}/data/.
