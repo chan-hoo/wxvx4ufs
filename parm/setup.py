@@ -1117,7 +1117,8 @@ class ConfigGenerator:
             self.config["nco_vars"]["RUN"] = self.config["app"]["exp_case_name"]
 
         self.config["nco_vars"] = resolve_config_references(
-            self.config["nco_vars"], {"HOMEwxvx": str(self.repo_dir)}
+            self.config["nco_vars"],
+            {"HOMEwxvx": str(self.repo_dir), "app": self.config["app"]},
         )
 
         output_dir = self.get_output_dir()
