@@ -6,7 +6,7 @@ app:
   workflow_manager: None
   workflow_type: hrrrcast
 nco_vars:
-  DCOMINhrrrcast: '{{ HOMEwxvx }}/fix/ctest/hrrrcast/hrrrcast_forecast'
+  DCOMINhrrrcast: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
