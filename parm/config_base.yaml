@@ -27,7 +27,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:20:00"
+      walltime: "00:25:00"
     external_data: true
   postwxvx_grid:
     groups:
@@ -36,7 +36,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:20:00"
     external_data: false
 common:
   cycles:
@@ -86,7 +86,7 @@ common:
       name: v
 vx_grid2grid:
   forecast:
-    name: HRRRCast
+    name: '{{ app.exp_case_name }}'
     path: '{{ meta.hrrrcast }}/{{ yyyymmdd }}/{{ hh }}/hrrrcast.avg.t{{ hh }}z.pgrb2.f{{ "%02d" % fh }}'
   meta:
     hrrrcast: '{{ nco_vars.DCOMINhrrrcast }}'
@@ -104,7 +104,8 @@ vx_grid2grid:
     name: HRRR
     type: grid
     url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
+  ncdiffs: true
 postwxvx_grid:
   work_path: '{{ DATA }}'
-  stat_prefix: 'grid_stat_hrrrcast'
+  stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
 
