@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
 """
-Generate task-specific WXVX configuration files.
+Generate experiment configuration and workflow files for WXVX.
 
-Read config_base.yaml, combine the parameter groups specified for
-each task, and write flattened config_[task].yaml files.
+Read and validate the base and platform YAML configuration, resolve
+configuration-group references, and write reusable and task-specific
+flattened YAML files. Special task configurations include derived
+date, lead-time, and variable settings.
+
+Render scheduler job cards for the selected tasks and create links to
+the experiment's NCO log, temporary, and COM directories. When ecFlow
+is selected as the workflow manager, also generate its suite definition
+and supporting scripts and include files.
 
 Expected input structure:
 
     parm/
     ├── config_base.yaml
     ├── config_platform.yaml
+    ├── templates/
+    │   └── template.jobcard_task
     └── setup.py
+
+    ecf/
+    ├── defs/
+    ├── include/
+    └── template_*.sh
 
 Usage:
     python setup.py
