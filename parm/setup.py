@@ -29,6 +29,7 @@ Expected input structure:
 Usage:
     python setup.py
     python setup.py --config config_base.yaml
+    python setup.py -c config_base.yaml
 """
 
 from __future__ import annotations
@@ -1215,6 +1216,7 @@ def main() -> int:
     )
 
     parser.add_argument(
+        "-c",
         "--config",
         default="config_base.yaml",
         help=(
