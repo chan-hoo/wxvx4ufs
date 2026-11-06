@@ -3,7 +3,7 @@ app:
   exp_case_name: test_hrrrcast
   platform: ursa
   run_type: ctest
-  workflow_manager: None
+  workflow_manager: ecflow
   workflow_type: hrrrcast
 nco_vars:
   DCOMINhrrrcast: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
@@ -28,7 +28,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:25:00"
-    external_data: true
+    external_data: false
   postwxvx_grid:
     groups:
       - common
