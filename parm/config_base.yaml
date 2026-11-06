@@ -28,7 +28,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:20:00"
-    external_data: false
+    external_data: true
   postwxvx_grid:
     groups:
       - common
