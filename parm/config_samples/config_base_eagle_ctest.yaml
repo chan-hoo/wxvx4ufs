@@ -41,7 +41,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:10:00"
-    external_data: false
+    external_data: true
   vx_grid2obs:
     groups:
       - common
@@ -51,7 +51,7 @@ tasks:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:15:00"
-    external_data: false
+    external_data: true
   postwxvx_grid:
     groups:
       - common
