@@ -6,7 +6,7 @@ app:
   workflow_manager: ecflow
   workflow_type: hrrrcast
 nco_vars:
-  DCOMINhrrrcast: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
+  COMINhrrrcast: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
@@ -89,7 +89,7 @@ vx_grid2grid:
     name: '{{ app.exp_case_name }}'
     path: '{{ meta.hrrrcast }}/{{ yyyymmdd }}/{{ hh }}/hrrrcast.avg.t{{ hh }}z.pgrb2.f{{ "%02d" % fh }}'
   meta:
-    hrrrcast: '{{ nco_vars.DCOMINhrrrcast }}'
+    hrrrcast: '{{ nco_vars.COMINhrrrcast }}'
     url:
       grid: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
       obs: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
