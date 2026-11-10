@@ -1130,13 +1130,11 @@ class ConfigGenerator:
                 group_names=[group_name],
             )
 
-            if config_name == "common" and isinstance(
-                group_config.get("app"), dict
-            ):
-                group_config["app"] = {
-                    key: value.lower() if isinstance(value, str) else value
-                    for key, value in group_config["app"].items()
-                }
+            if config_name == "common":
+                for key in self.config.get("app", {}):
+                    value = group_config.get(key)
+                    if isinstance(value, str):
+                        group_config[key] = value.lower()
     
             output_file = self.write_task_config(
                 task_name=config_name,
