@@ -102,7 +102,7 @@ vx_grid2grid:
   truth:
     name: '{{ app.truth_grid_model }}'
     type: grid
-    url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
+    url: '{{ truth_data.truth_grid_urls[app.truth_grid_model] }}'
   ncdiffs: true
 postwxvx_grid:
   work_path: '{{ DATA }}'

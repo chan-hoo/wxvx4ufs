@@ -476,7 +476,14 @@ class ConfigGenerator:
 
         # Merge the remaining task configuration groups.
         merge_groups(group_names, task_config)
-        task_config = resolve_config_references(task_config, self.config)
+        resolution_context = {
+            **self.config,
+            "truth_data": self.platform_config.get("truth_data", {}),
+        }
+        task_config = resolve_config_references(
+            task_config,
+            resolution_context,
+        )
 
         # -------------------------------------------------------------
         # Add task metadata to config_common.yaml.

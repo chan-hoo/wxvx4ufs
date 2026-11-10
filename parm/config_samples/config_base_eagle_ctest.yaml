@@ -146,7 +146,7 @@ vx_grid2grid:
   truth:
     name: '{{ app.truth_grid_model }}'
     type: grid
-    url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
+    url: '{{ truth_data.truth_grid_urls[app.truth_grid_model] }}'
   ncdiffs: true
   regrid:
     method: NEAREST
@@ -158,7 +158,7 @@ vx_grid2obs:
   truth:
     name: '{{ app.truth_obs_model }}'
     type: point
-    url: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
+    url: '{{ truth_data.truth_obs_urls[app.truth_obs_model] }}'
   regrid:
     method: BILIN
     to: G104
