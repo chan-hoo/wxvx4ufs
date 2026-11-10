@@ -100,7 +100,7 @@ vx_grid2grid:
     obs: '{{ meta.workdir }}/obs'
     run: '{{ meta.workdir }}'
   truth:
-    name: '{{ app.truth_grid_name }}'
+    name: '{{ app.truth_grid_model }}'
     type: grid
     url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
   ncdiffs: true
