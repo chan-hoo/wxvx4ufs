@@ -5,7 +5,7 @@ app:
   run_type: ctest
   truth_grid_model: HRRR
   truth_obs_model: PREPBUFR
-  workflow_manager: None
+  workflow_manager: ecflow
   workflow_type: global_workflow
 nco_vars:
   COMINglobal_workflow: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
