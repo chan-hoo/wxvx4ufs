@@ -1,0 +1,110 @@
+app:
+  account: epic
+  exp_case_name: test_gw_hrrr
+  platform: ursa
+  run_type: ctest
+  truth_grid_model: HRRR
+  truth_obs_model: PREPBUFR
+  workflow_manager: ecflow
+  workflow_type: global_workflow
+nco_vars:
+  COMINglobal_workflow: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
+  envir: test
+  KEEPDATA: 'YES'
+  model_ver: v0.0.1
+  NET: test_net
+  OPS_PATH: '{{ HOMEwxvx }}/parm/PTMP'
+  RUN: '{{ app.exp_case_name }}'
+config_common:
+  - app
+  - nco_vars
+task_list:
+  - vx_grid2grid
+  - postwxvx_grid
+tasks:
+  vx_grid2grid:
+    groups:
+      - common
+      - vx_grid2grid
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:20:00"
+    external_data: true
+  postwxvx_grid:
+    groups:
+      - common
+      - postwxvx_grid
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
+    external_data: false
+common:
+  cycles:
+    start: '2021-12-21T00:00:00'
+    step: 0
+    stop: '2021-12-21T00:00:00'
+  leadtimes:
+    start: 0
+    step: 1
+    stop: 3
+  meta:
+    levels: &levels [200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950, 975, 1000]
+  variables:
+    2t:
+      level_type: heightAboveGround
+      levels:
+      - 2
+      name: 2t
+    10u:
+      level_type: heightAboveGround
+      levels:
+      - 10
+      name: 10u
+    10v:
+      level_type: heightAboveGround
+      levels:
+      - 10
+      name: 10v
+    gh:
+      level_type: isobaricInhPa
+      levels: *levels
+      name: gh
+    sp:
+      level_type: surface
+      name: sp
+    t:
+      level_type: isobaricInhPa
+      levels: *levels
+      name: t
+    u:
+      level_type: isobaricInhPa
+      levels: *levels
+      name: u
+    v:
+      level_type: isobaricInhPa
+      levels: *levels
+      name: v
+vx_grid2grid:
+  forecast:
+    name: '{{ app.exp_case_name }}'
+    path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.pres_a.0p25.f{{ "%03d" % fh }}.grib2'
+  meta:
+    gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
+    workdir: '{{ DATA }}'
+  paths:
+    grids:
+      forecast: '{{ meta.workdir }}/grids/forecast'
+      truth: '{{ meta.workdir }}/grids/truth'
+    obs: '{{ meta.workdir }}/obs'
+    run: '{{ meta.workdir }}'
+  truth:
+    name: '{{ app.truth_grid_model }}'
+    type: grid
+    url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
+  ncdiffs: true
+postwxvx_grid:
+  work_path: '{{ DATA }}'
+  stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
+
