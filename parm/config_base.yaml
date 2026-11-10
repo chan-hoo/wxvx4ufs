@@ -1,8 +1,10 @@
 app:
   account: epic
-  exp_case_name: test_gw
+  exp_case_name: test_gw_hrrr
   platform: ursa
   run_type: ctest
+  truth_grid_model: HRRR
+  truth_obs_model: PREPBUFR
   workflow_manager: None
   workflow_type: global_workflow
 nco_vars:
@@ -48,7 +50,7 @@ common:
     step: 1
     stop: 3
   meta:
-    levels: &levels [1, 5, 10, 20, 50, 100, 200, 500, 700, 850, 1000]
+    levels: &levels [200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950, 975, 1000]
   variables:
     2t:
       level_type: heightAboveGround
@@ -90,9 +92,6 @@ vx_grid2grid:
     path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.pres_a.0p25.f{{ "%03d" % fh }}.grib2'
   meta:
     gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
-    url:
-      grid: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
-      obs: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
     workdir: '{{ DATA }}'
   paths:
     grids:
@@ -101,9 +100,9 @@ vx_grid2grid:
     obs: '{{ meta.workdir }}/obs'
     run: '{{ meta.workdir }}'
   truth:
-    name: GFS
+    name: '{{ app.truth_grid_name }}'
     type: grid
-    url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
+    url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
   ncdiffs: true
 postwxvx_grid:
   work_path: '{{ DATA }}'
