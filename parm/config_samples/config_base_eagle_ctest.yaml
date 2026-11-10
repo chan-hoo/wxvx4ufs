@@ -3,6 +3,8 @@ app:
   exp_case_name: test_eagle
   platform: ursa
   run_type: ctest
+  truth_grid_model: GFS
+  truth_obs_model: PREPBUFR
   workflow_manager: ecflow
   workflow_type: eagle
 nco_vars:
@@ -142,7 +144,7 @@ vx_common:
     run: '{{ meta.workdir }}'
 vx_grid2grid:
   truth:
-    name: GFS
+    name: '{{ app.truth_grid_model }}'
     type: grid
     url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
   ncdiffs: true
@@ -154,7 +156,7 @@ vx_grid2grid:
       truth: '{{ meta.workdir }}/grids/truth'
 vx_grid2obs:
   truth:
-    name: PREPBUFR
+    name: '{{ app.truth_obs_model }}'
     type: point
     url: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
   regrid:

@@ -89,7 +89,7 @@ vx_grid2grid:
     name: '{{ app.exp_case_name }}'
     path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.pres_a.0p25.f{{ "%03d" % fh }}.grib2'
   meta:
-    gw_forecast: '{{ nco_vars.DCOMINglobal_workflow }}'
+    gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
     url:
       grid: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{{ yyyymmdd }}/{{ hh }}/atmos/gfs.t{{ hh }}z.pgrb2.0p25.f{{ "%03d" % fh }}
       obs: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr

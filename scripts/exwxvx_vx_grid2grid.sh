@@ -13,6 +13,7 @@ external_data=$(read_yaml "${config_common}" "external_data_vx_grid2grid")
 external_data=$(printf '%s' "${external_data}" | tr '[:upper:]' '[:lower:]')
 platform=$(read_yaml "${config_common}" "platform")
 run_type=$(read_yaml "${config_common}" "run_type")
+truth_grid_model=$(read_yaml "${config_common}" "truth_grid_model")
 workflow_type=$(read_yaml "${config_common}" "workflow_type")
 
 # Copy pre-downloaded data files for c-test to temporary working directory.
@@ -20,7 +21,7 @@ if [[ "${run_type}" == "ctest" ]]; then
   # Truth data
   if [[ "${external_data}" == "false" ]]; then
     mkdir -p ${DATA}/grids
-    cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/grids/truth" ${DATA}/grids/.
+    cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/truth_grids/${truth_grid_model}/truth" ${DATA}/grids/.
   fi
 fi
 
