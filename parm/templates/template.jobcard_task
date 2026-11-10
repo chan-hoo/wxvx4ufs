@@ -110,6 +110,8 @@ export RUN="${RUN:-{{ RUN }}}"
 export DCOMINhrrrcast="${DCOMINhrrrcast:-{{ DCOMINhrrrcast }}}"
 {%- elif workflow_type == "eagle" and task_name == "prewxvx" %}
 export DCOMINeagle="${DCOMINeagle:-{{ DCOMINeagle }}}"
+{%- elif workflow_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+export DCOMINglobal_workflow="${DCOMINglobal_workflow:-{{ DCOMINglobal_workflow }}}"
 {%- endif %}
 # Path to experimental case directory
 export exp_case_path="{{ exp_case_path }}"
