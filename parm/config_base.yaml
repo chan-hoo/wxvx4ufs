@@ -6,7 +6,7 @@ app:
   workflow_manager: None
   workflow_type: global_workflow
 nco_vars:
-  DCOMINglobal_workflow: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
+  COMINglobal_workflow: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1

@@ -65,7 +65,11 @@ Before proceeding, review the parameters `account` ,`exp_case_name`, and `platfo
 ```bash
 vim config.yaml
 ```
-You can check the list of tasks `task_list` selected from the available tasks under the `tasks` group.
+- Available options:
+  - `platform`: ursa, hercules, gaea-c6, orion, derecho
+  - `run_type`: ctest
+  - `workflow_manager`: ecflow, None
+  - `workflow_type`: eagle, hrrrcast
 
 Run the set-up script to generate the experimental case configuration and supporting directories:
 

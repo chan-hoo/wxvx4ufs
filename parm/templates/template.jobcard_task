@@ -107,11 +107,11 @@ export DCOMROOT="${DCOMROOT:-${OPSROOT}/dcom}"
 export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
 {%- if workflow_type == "hrrrcast" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
-export DCOMINhrrrcast="${DCOMINhrrrcast:-{{ DCOMINhrrrcast }}}"
+export COMINhrrrcast="${COMINhrrrcast:-{{ COMINhrrrcast }}}"
 {%- elif workflow_type == "eagle" and task_name == "prewxvx" %}
-export DCOMINeagle="${DCOMINeagle:-{{ DCOMINeagle }}}"
+export COMINeagle="${COMINeagle:-{{ COMINeagle }}}"
 {%- elif workflow_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
-export DCOMINglobal_workflow="${DCOMINglobal_workflow:-{{ DCOMINglobal_workflow }}}"
+export COMINglobal_workflow="${COMINglobal_workflow:-{{ COMINglobal_workflow }}}"
 {%- endif %}
 # Path to experimental case directory
 export exp_case_path="{{ exp_case_path }}"
