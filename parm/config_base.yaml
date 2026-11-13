@@ -27,6 +27,7 @@ tasks:
   vx_grid2grid:
     groups:
       - common
+      - vx_common
       - vx_grid2grid
     hpc:
       memory_per_node: 128G
@@ -36,6 +37,7 @@ tasks:
   vx_grid2obs:
     groups:
       - common
+      - vx_common
       - vx_grid2obs
     hpc:
       memory_per_node: 128G
@@ -102,23 +104,25 @@ common:
       level_type: isobaricInhPa
       levels: *levels
       name: v
-vx_grid2grid:
+vx_common:
   forecast:
     name: '{{ app.exp_case_name }}'
     path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.master.f{{ "%03d" % fh }}.grib2'
-  leadtimes:
-    start: 0
-    step: 24
-    stop: 72
   meta:
     gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
     workdir: '{{ DATA }}'
   paths:
     grids:
       forecast: '{{ meta.workdir }}/grids/forecast'
-      truth: '{{ meta.workdir }}/grids/truth'
-    obs: '{{ meta.workdir }}/obs'
     run: '{{ meta.workdir }}'
+vx_grid2grid:
+  leadtimes:
+    start: 0
+    step: 24
+    stop: 72
+  paths:
+    grids:
+      truth: '{{ meta.workdir }}/grids/truth'
   truth:
     name: '{{ app.truth_grid_model }}'
     type: grid
