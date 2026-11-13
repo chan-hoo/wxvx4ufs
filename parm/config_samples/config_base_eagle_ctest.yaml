@@ -24,6 +24,10 @@ task_list:
   - vx_grid2obs
   - postwxvx_grid
   - postwxvx_obs
+# Shared leadtimes belong in common. For different verification windows,
+# vx_grid2grid.leadtimes drives prewxvx and postwxvx_grid, while
+# vx_grid2obs.leadtimes drives postwxvx_obs. prewxvx.leadtimes can override
+# the grid leadtimes for prewxvx alone.
 tasks:
   prewxvx:
     groups:

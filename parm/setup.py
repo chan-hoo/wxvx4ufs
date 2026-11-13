@@ -503,8 +503,30 @@ class ConfigGenerator:
             common = self.config.get("common", {})
     
             cycles = common.get("cycles", {})
-            leadtimes = common.get("leadtimes", {})
+            leadtimes = deepcopy(common.get("leadtimes", {}))
             variables = common.get("variables", {})
+
+            leadtime_groups = {
+                "prewxvx": ("vx_grid2grid", "prewxvx"),
+                "postwxvx_grid": ("vx_grid2grid",),
+                "postwxvx_obs": ("vx_grid2obs",),
+            }
+            for group_name in leadtime_groups[task_name]:
+                if group_name not in self.config:
+                    continue
+
+                group_config: dict[str, Any] = {}
+                merge_groups([group_name], group_config)
+                if "leadtimes" not in group_config:
+                    continue
+
+                group_leadtimes = group_config["leadtimes"]
+                if not isinstance(group_leadtimes, dict):
+                    raise ValueError(
+                        f"'{group_name}.leadtimes' must be a mapping."
+                    )
+
+                deep_merge(leadtimes, group_leadtimes)
 
             leadtime_step = leadtimes.get("step")
             start = cycles.get("start")
@@ -515,6 +537,8 @@ class ConfigGenerator:
 
             # prewxvx
             if task_name == "prewxvx":
+                # This setting only feeds derived parameters below.
+                task_config.pop("leadtimes", None)
     
                 # Maximum forecast lead time: '24' -> 24.
                 leadtime_stop = leadtimes.get("stop")
